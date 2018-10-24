@@ -1,0 +1,29 @@
+{
+    "extends": "airbnb",
+    "rules": {
+        "no-plusplus": [
+            0
+        ],
+        "no-console": [
+            0
+        ],
+        "no-unused-expressions": [
+            "error",
+            {
+                "allowTernary": true
+            }
+        ],
+        "no-mixed-operators":[
+            0
+        ],
+        "func-names":[
+            0
+        ]
+    },
+    "env": {
+        "browser": true
+    },
+    "globals": {
+        "d3": true
+    }
+}
