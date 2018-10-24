@@ -1,7 +1,11 @@
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 
+
 // Default values for initialization
+
+const MAX_ITERATIONS = 100;
+const MAX_WORKERS = 6;
 const DEF_MIN_REAL = -2;
 const DEF_MAX_REAL = 1.3;
 const DEF_MIN_IMAGINARY = -1.4;
@@ -41,3 +45,48 @@ function applyZoom(mouseReal, mouseImaginary) {
   currentMinImaginary -= deltaImaginary;
   currentMaxImaginary -= deltaImaginary;
 }
+
+// Set up canvas
+const myCanvas = document.getElementById('canvas');
+myCanvas.width = CANVAS_WIDTH;
+myCanvas.height = CANVAS_HEIGHT;
+const X_OFFSET = myCanvas.offsetLeft;
+const Y_OFFSET = myCanvas.offsetTop;
+const context = myCanvas.getContext('2d');
+
+function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
+  // Correct for aspect ratio
+  const ratio = Math.abs(maxReal - minReal) / Math.abs(maxImaginary - minImaginary);
+  const sratio = CANVAS_WIDTH / CANVAS_HEIGHT;
+  if (sratio > ratio) {
+    const xf = sratio / ratio;
+    minReal *= xf;
+    maxReal *= xf;
+  } else {
+    const yf = ratio / sratio;
+    minImaginary *= yf;
+    maxImaginary *= yf;
+  }
+
+  // Calculate factors to convert X and Y to real and imaginary components of a compelx number
+  const realFactor = calcRealFactor(maxReal, minReal);
+  const imaginaryFactor = calcImaginaryFactor(maxImaginary, minImaginary);
+
+  // Create worker threads and have each thread handle one column of data
+  for (let x = 0; x < MAX_WORKERS; x++) {
+    const worker = new Worker('worker.js');
+    worker.postMessage({ x });
+    worker.onmessage = function (e) {
+      console.log(e.data.x);
+      let currentX = e.data.x;
+      // Start work on the column MAX_WORKERS down the axis
+      currentX += MAX_WORKERS;
+      // If we haven't reached the end of the canvas
+      if (currentX < CANVAS_WIDTH) {
+        worker.postMessage({ x: currentX });
+      }
+    };
+  }
+}
+
+drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
