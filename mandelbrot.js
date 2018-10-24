@@ -4,7 +4,6 @@ const CANVAS_HEIGHT = window.innerHeight;
 
 // Default values for initialization
 
-const MAX_ITERATIONS = 100;
 const MAX_WORKERS = 6;
 const DEF_MIN_REAL = -2;
 const DEF_MAX_REAL = 1.3;
@@ -86,7 +85,18 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       maxImaginary,
     });
     worker.onmessage = function (e) {
-      console.log(e.data.x);
+    //   console.log(e.data);
+      const results = e.data;
+      // Draw points from workers
+      const { points } = results;
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const y = point.y;
+        const x = e.data.x;
+        const fillStyle = point.fillStyle;
+        context.fillStyle = fillStyle;
+        context.fillRect(x, y, 1, 1);
+      }
       let currentX = e.data.x;
       // Start work on the column MAX_WORKERS down the axis
       currentX += MAX_WORKERS;
