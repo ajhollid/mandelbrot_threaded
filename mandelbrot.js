@@ -10,12 +10,13 @@ const DEF_MAX_REAL = 1.3;
 const DEF_MIN_IMAGINARY = -1.4;
 const DEF_MAX_IMAGINARY = 1.5;
 
-const currentMinReal = DEF_MIN_REAL;
-const currentMaxReal = DEF_MAX_REAL;
-const currentMinImaginary = DEF_MIN_IMAGINARY;
-const currentMaxImaginary = DEF_MAX_IMAGINARY;
+let currentMinReal = DEF_MIN_REAL;
+let currentMaxReal = DEF_MAX_REAL;
+let currentMinImaginary = DEF_MIN_IMAGINARY;
+let currentMaxImaginary = DEF_MAX_IMAGINARY;
 
-const zoomFactor = 1;
+const ZOOM_STEP = 2;
+let zoomFactor = 1;
 
 function calcRealFactor(maxReal, minReal) {
   return (maxReal - minReal) / (CANVAS_WIDTH);
@@ -23,6 +24,10 @@ function calcRealFactor(maxReal, minReal) {
 
 function calcImaginaryFactor(maxImaginary, minImaginary) {
   return (maxImaginary - minImaginary) / (CANVAS_HEIGHT);
+}
+
+function interpolate(start, end, interpolation) {
+  return start + ((end - start) * interpolation);
 }
 
 function applyZoom(mouseReal, mouseImaginary) {
@@ -118,3 +123,15 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
 }
 
 drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+
+myCanvas.addEventListener('click', (e) => {
+  const realFactor = calcRealFactor(currentMaxReal, currentMinReal);
+  const imaginaryFactor = calcImaginaryFactor(currentMaxImaginary, currentMinImaginary);
+  const mouseReal = currentMinReal + (e.clientX - X_OFFSET) * realFactor;
+  const mouseImaginary = currentMinImaginary + (e.clientY - Y_OFFSET) * imaginaryFactor;
+  zoomFactor *= ZOOM_STEP;
+  applyZoom(mouseReal, mouseImaginary);
+
+
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+});
