@@ -1,5 +1,9 @@
 function receiveMessage(event) {
-  postMessage(event.data);
+  drawLine(event.data);
+}
+
+function drawLine(data) {
+  console.log(data);
 }
 
 onmessage = receiveMessage;

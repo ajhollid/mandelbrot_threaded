@@ -75,7 +75,16 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
   // Create worker threads and have each thread handle one column of data
   for (let x = 0; x < MAX_WORKERS; x++) {
     const worker = new Worker('worker.js');
-    worker.postMessage({ x });
+    worker.postMessage({
+      x,
+      CANVAS_HEIGHT,
+      realFactor,
+      imaginaryFactor,
+      minReal,
+      maxReal,
+      minImaginary,
+      maxImaginary,
+    });
     worker.onmessage = function (e) {
       console.log(e.data.x);
       let currentX = e.data.x;
@@ -83,7 +92,16 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       currentX += MAX_WORKERS;
       // If we haven't reached the end of the canvas
       if (currentX < CANVAS_WIDTH) {
-        worker.postMessage({ x: currentX });
+        worker.postMessage({
+          x: currentX,
+          CANVAS_HEIGHT,
+          realFactor,
+          imaginaryFactor,
+          minReal,
+          maxReal,
+          minImaginary,
+          maxImaginary,
+        });
       }
     };
   }
