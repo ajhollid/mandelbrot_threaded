@@ -3,6 +3,7 @@ import createColors from './colors.js';
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 const MAX_ITERATIONS = 1000;
+const BAILOUT_RADIUS = 2 ** 8;
 
 
 // Default values for initialization
@@ -16,7 +17,6 @@ const DEF_MAX_IMAGINARY = 1.5;
 // Colors
 const COLORS = createColors();
 
-
 let currentMinReal = DEF_MIN_REAL;
 let currentMaxReal = DEF_MAX_REAL;
 let currentMinImaginary = DEF_MIN_IMAGINARY;
@@ -24,6 +24,15 @@ let currentMaxImaginary = DEF_MAX_IMAGINARY;
 
 const ZOOM_STEP = 1.5;
 let zoomFactor = 1;
+
+
+// Set up canvas
+const myCanvas = document.getElementById('canvas');
+myCanvas.width = CANVAS_WIDTH;
+myCanvas.height = CANVAS_HEIGHT;
+const X_OFFSET = myCanvas.offsetLeft;
+const Y_OFFSET = myCanvas.offsetTop;
+const context = myCanvas.getContext('2d');
 
 function calcRealFactor(maxReal, minReal) {
   return (maxReal - minReal) / (CANVAS_WIDTH);
@@ -36,34 +45,6 @@ function calcImaginaryFactor(maxImaginary, minImaginary) {
 function interpolate(start, end, interpolation) {
   return start + ((end - start) * interpolation);
 }
-
-function applyZoom(mouseReal, mouseImaginary) {
-  // Create a new zoomed in view rectangle
-  const interpolation = 1.0 / zoomFactor;
-  currentMinReal = interpolate(mouseReal, currentMinReal, interpolation);
-  currentMinImaginary = interpolate(mouseImaginary, currentMinImaginary, interpolation);
-  currentMaxReal = interpolate(mouseReal, currentMaxReal, interpolation);
-  currentMaxImaginary = interpolate(mouseImaginary, currentMaxImaginary, interpolation);
-
-  // Center on the mouse click
-  const centerReal = (currentMinReal + currentMaxReal) / 2;
-  const centerImaginary = (currentMinImaginary + currentMaxImaginary) / 2;
-  const deltaReal = centerReal - mouseReal;
-  const deltaImaginary = centerImaginary - mouseImaginary;
-
-  currentMinReal -= deltaReal;
-  currentMaxReal -= deltaReal;
-  currentMinImaginary -= deltaImaginary;
-  currentMaxImaginary -= deltaImaginary;
-}
-
-// Set up canvas
-const myCanvas = document.getElementById('canvas');
-myCanvas.width = CANVAS_WIDTH;
-myCanvas.height = CANVAS_HEIGHT;
-const X_OFFSET = myCanvas.offsetLeft;
-const Y_OFFSET = myCanvas.offsetTop;
-const context = myCanvas.getContext('2d');
 
 function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
   // Correct for aspect ratio
@@ -88,6 +69,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
     const worker = new Worker('worker.js');
     worker.postMessage({
       MAX_ITERATIONS,
+      BAILOUT_RADIUS,
       x,
       CANVAS_HEIGHT,
       COLORS,
@@ -118,6 +100,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       if (currentX < CANVAS_WIDTH) {
         worker.postMessage({
           MAX_ITERATIONS,
+          BAILOUT_RADIUS,
           x: currentX,
           CANVAS_HEIGHT,
           COLORS,
@@ -133,27 +116,43 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
   }
 }
 
+function applyZoom(mouseReal, mouseImaginary) {
+  // Create a new zoomed in view rectangle
+  const interpolation = 1.0 / zoomFactor;
+  currentMinReal = interpolate(mouseReal, currentMinReal, interpolation);
+  currentMinImaginary = interpolate(mouseImaginary, currentMinImaginary, interpolation);
+  currentMaxReal = interpolate(mouseReal, currentMaxReal, interpolation);
+  currentMaxImaginary = interpolate(mouseImaginary, currentMaxImaginary, interpolation);
+
+  // Center on the mouse click
+  const centerReal = (currentMinReal + currentMaxReal) / 2;
+  const centerImaginary = (currentMinImaginary + currentMaxImaginary) / 2;
+  const deltaReal = centerReal - mouseReal;
+  const deltaImaginary = centerImaginary - mouseImaginary;
+
+  currentMinReal -= deltaReal;
+  currentMaxReal -= deltaReal;
+  currentMinImaginary -= deltaImaginary;
+  currentMaxImaginary -= deltaImaginary;
+}
+
+function handleZoom(event, zoomStep) {
+  event.preventDefault();
+  const realFactor = calcRealFactor(currentMaxReal, currentMinReal);
+  const imaginaryFactor = calcImaginaryFactor(currentMaxImaginary, currentMinImaginary);
+  const mouseReal = currentMinReal + (event.clientX - X_OFFSET) * realFactor;
+  const mouseImaginary = currentMinImaginary + (event.clientY - Y_OFFSET) * imaginaryFactor;
+  zoomFactor *= zoomStep;
+  applyZoom(mouseReal, mouseImaginary);
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+}
+
 drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 
 myCanvas.addEventListener('click', (e) => {
-  const realFactor = calcRealFactor(currentMaxReal, currentMinReal);
-  const imaginaryFactor = calcImaginaryFactor(currentMaxImaginary, currentMinImaginary);
-  const mouseReal = currentMinReal + (e.clientX - X_OFFSET) * realFactor;
-  const mouseImaginary = currentMinImaginary + (e.clientY - Y_OFFSET) * imaginaryFactor;
-  zoomFactor *= ZOOM_STEP;
-  applyZoom(mouseReal, mouseImaginary);
-
-
-  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+  handleZoom(e, ZOOM_STEP);
 });
 
-// COLORS.forEach((color, index) => {
-//   context.beginPath();
-//   context.moveTo(index, 0);
-//   context.lineTo(index, 500);
-//   context.lineWidth = (4);
-//   context.strokeStyle = color;
-//   context.stroke();
-//   context.closePath();
-// });
-
+myCanvas.addEventListener('contextmenu', (e) => {
+  handleZoom(e, 1 / ZOOM_STEP);
+});

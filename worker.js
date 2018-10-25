@@ -1,5 +1,3 @@
-
-
 function receiveMessage(event) {
   drawLine(event.data);
 }
@@ -14,7 +12,7 @@ function drawLine(data) {
     let zImaginary = 0;
     let iterations = 0;
 
-    while (zReal * zReal + zImaginary * zImaginary <= 100 && iterations < data.MAX_ITERATIONS) {
+    while (zReal * zReal + zImaginary * zImaginary <= data.BAILOUT_RADIUS && iterations < data.MAX_ITERATIONS) {
       const nextZReal = zReal * zReal - zImaginary * zImaginary + cReal;
       const nextZImaginary = 2 * zReal * zImaginary + cImaginary;
       zReal = nextZReal;
