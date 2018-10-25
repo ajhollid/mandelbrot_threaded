@@ -1,4 +1,6 @@
 import createColors from './colors.js';
+import Worker from './mandelbrot.worker';
+
 
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
@@ -66,7 +68,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
 
   // Create worker threads and have each thread handle one column of data
   for (let x = 0; x < MAX_WORKERS; x++) {
-    const worker = new Worker('worker.js');
+    const worker = new Worker();
     worker.postMessage({
       MAX_ITERATIONS,
       BAILOUT_RADIUS,
