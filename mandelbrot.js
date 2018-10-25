@@ -2,7 +2,7 @@ import createColors from './colors.js';
 
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
-const MAX_ITERATIONS = 10000;
+const MAX_ITERATIONS = 1000;
 
 
 // Default values for initialization
@@ -146,3 +146,14 @@ myCanvas.addEventListener('click', (e) => {
 
   drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 });
+
+// COLORS.forEach((color, index) => {
+//   context.beginPath();
+//   context.moveTo(index, 0);
+//   context.lineTo(index, 500);
+//   context.lineWidth = (4);
+//   context.strokeStyle = color;
+//   context.stroke();
+//   context.closePath();
+// });
+

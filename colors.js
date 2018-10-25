@@ -1,3 +1,4 @@
+const MAX_COLORS = Math.pow(2, 11);
 export default function createColors() {
   const colors = [];
   const createInterpolant = function (xs, ys) {
@@ -88,7 +89,7 @@ export default function createColors() {
 
 
   function createChannelArray(array, interpolant) {
-    for (let x = 0; x < 1; x += 1 / 2048) {
+    for (let x = 0; x < 1; x += 1 / MAX_COLORS) {
       const xSquared = interpolant(x);
       array.push(xSquared);
     }
@@ -100,19 +101,19 @@ export default function createColors() {
 
   createChannelArray(
     rArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [236, 214, 180, 40, 120]),
+    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [0, 32, 237, 255, 0]),
   );
   createChannelArray(
     gArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [100, 72.8, 100, 100, 100]),
+    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [7, 107, 255, 170, 2]),
   );
   createChannelArray(
     bArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [19.6, 16.1, 96.5, 50, 0.4]),
+    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [100, 203, 255, 0, 0]),
   );
 
   for (let i = 0; i < bArray.length; i++) {
-    colors.push(`hsl(${rArray[i]},${gArray[i]}%,${bArray[i]}%)`);
+    colors.push(`rgb(${rArray[i]},${gArray[i]},${bArray[i]})`);
   }
   return colors;
 }

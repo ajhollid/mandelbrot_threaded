@@ -14,7 +14,7 @@ function drawLine(data) {
     let zImaginary = 0;
     let iterations = 0;
 
-    while (zReal * zReal + zImaginary * zImaginary <= 2 * 2 && iterations < data.MAX_ITERATIONS) {
+    while (zReal * zReal + zImaginary * zImaginary <= 100 && iterations < data.MAX_ITERATIONS) {
       const nextZReal = zReal * zReal - zImaginary * zImaginary + cReal;
       const nextZImaginary = 2 * zReal * zImaginary + cImaginary;
       zReal = nextZReal;
@@ -31,7 +31,8 @@ function drawLine(data) {
       const z = Math.sqrt(zReal * zReal + zImaginary * zImaginary);
       // Create smooth color transitions
       const smoothed = Math.log(Math.log(z) * 1 / Math.log(2)) * 1 / Math.log(2);
-      const colorI = parseInt((Math.sqrt(iterations + 1 - smoothed) * 256 - 200) % data.COLORS.length, 10);
+      const colorI = parseInt((Math.sqrt(iterations + 1 - smoothed) * 256 - 250) % data.COLORS.length, 10);
+
       const color = data.COLORS[colorI];
       points.push({
         y,
