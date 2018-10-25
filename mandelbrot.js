@@ -81,17 +81,13 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       maxImaginary,
     });
     worker.onmessage = function (e) {
-    //   console.log(e.data);
-      const results = e.data;
-      // Draw points from workers
-      const { points } = results;
+      const { points } = e.data;
       for (let i = 0; i < points.length; i++) {
         const point = points[i];
-        const y = point.y;
-        const x = e.data.x;
-        const fillStyle = point.fillStyle;
+        const { y, fillStyle } = point;
+        const currentX = e.data.x;
         context.fillStyle = fillStyle;
-        context.fillRect(x, y, 1, 1);
+        context.fillRect(currentX, y, 1, 1);
       }
       let currentX = e.data.x;
       // Start work on the column MAX_WORKERS down the axis
