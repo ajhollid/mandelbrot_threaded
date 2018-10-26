@@ -214,5 +214,6 @@ function handlePan(direction) {
 }
 
 window.pan = function (direction) {
+  // handle panning
   handlePan(direction);
 };
