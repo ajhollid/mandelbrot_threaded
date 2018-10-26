@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <html>
     <body>
-        <div class="canvas-container">
+        <div class="container">
             <canvas id="canvas"></canvas>
+            <div class="overlay">
+                <input class="jscolor" id ='1' onchange="update(this.jscolor, 0)" value="000764">                <br>
+                <input class="jscolor" onchange="update(this.jscolor, 1)" value="206BCB">
+                <br>
+                <input class="jscolor" onchange="update(this.jscolor, 2)" value="EDFFFF">
+                <br>
+                <input class="jscolor" onchange="update(this.jscolor, 3)" value="FFAA00">
+                <br>
+                <input class="jscolor" onchange="update(this.jscolor, 4)" value="000200">
+                
+            </div>
         </div>
+        <script src="jscolor.js"></script>
         <script src="bundle.js"></script>
     </body>
 </html>
