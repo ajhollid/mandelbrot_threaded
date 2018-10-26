@@ -28,7 +28,7 @@ const DEFAULT_COLORS = [
 ];
 const currentColors = DEFAULT_COLORS;
 
-const COLORS = createColors(MAX_COLORS, currentColors);
+let COLORS = createColors(MAX_COLORS, currentColors);
 
 let currentMinReal = DEF_MIN_REAL;
 let currentMaxReal = DEF_MAX_REAL;
@@ -165,3 +165,14 @@ myCanvas.addEventListener('click', (e) => {
 myCanvas.addEventListener('contextmenu', (e) => {
   handleZoom(e, 1 / ZOOM_STEP);
 });
+
+// handle color picking
+window.update = function (colorData, colorNumber) {
+  const r = Math.round(colorData.rgb[0]);
+  const g = Math.round(colorData.rgb[1]);
+  const b = Math.round(colorData.rgb[2]);
+  currentColors[colorNumber] = { r, g, b };
+  COLORS = createColors(MAX_COLORS, currentColors);
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+  document.getElementsByClassName('jscolor')[colorNumber].jscolor.hide();
+};

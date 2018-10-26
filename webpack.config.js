@@ -13,6 +13,9 @@ module.exports = {
       }, {
         from: './src/style.css', to: './style.css',
       },
+      {
+        from: './src/scripts/jscolor.js', to: './jscolor.js',
+      },
     ]),
   ],
   devtool: 'source-map',
