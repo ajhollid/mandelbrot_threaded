@@ -7,7 +7,8 @@
         <div class="container">
             <canvas id="canvas"></canvas>
             <div class="overlay">
-                <input class="jscolor" id ='1' onchange="update(this.jscolor, 0)" value="000764">                <br>
+                <input class="jscolor" id ='1' onchange="update(this.jscolor, 0)" value="000764">               
+                <br>
                 <input class="jscolor" onchange="update(this.jscolor, 1)" value="206BCB">
                 <br>
                 <input class="jscolor" onchange="update(this.jscolor, 2)" value="EDFFFF">
@@ -15,7 +16,11 @@
                 <input class="jscolor" onchange="update(this.jscolor, 3)" value="FFAA00">
                 <br>
                 <input class="jscolor" onchange="update(this.jscolor, 4)" value="000200">
-                
+                <br>
+                <br>
+                <button onclick="panUp()">up</button>
+                <br>
+                <button onclick="panLeft()">left</button></button><button onclick="panDown()">down</button><button onclick="panRight()">right</button>
             </div>
         </div>
         <script src="jscolor.js"></script>

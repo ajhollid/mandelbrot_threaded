@@ -36,6 +36,7 @@ let currentMinImaginary = DEF_MIN_IMAGINARY;
 let currentMaxImaginary = DEF_MAX_IMAGINARY;
 
 const ZOOM_STEP = 1.5;
+const PAN_INCREMENT = 0.002;
 let zoomFactor = 1;
 
 
@@ -175,4 +176,35 @@ window.update = function (colorData, colorNumber) {
   COLORS = createColors(MAX_COLORS, currentColors);
   drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
   document.getElementsByClassName('jscolor')[colorNumber].jscolor.hide();
+};
+
+window.panUp = function () {
+  const increment = Math.min(
+    Math.abs(currentMinImaginary * PAN_INCREMENT),
+    Math.abs(currentMaxImaginary * PAN_INCREMENT),
+  );
+  currentMinImaginary += increment;
+  currentMaxImaginary += increment;
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+};
+
+window.panDown = function () {
+  const increment = Math.min(Math.abs(currentMinImaginary * PAN_INCREMENT), Math.abs(currentMaxImaginary * PAN_INCREMENT));
+  currentMinImaginary -= increment;
+  currentMaxImaginary -= increment;
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+};
+
+window.panLeft = function () {
+  const increment = Math.min(Math.abs(currentMinReal * PAN_INCREMENT), Math.abs(currentMaxReal) * PAN_INCREMENT);
+  currentMinReal -= increment;
+  currentMaxReal -= increment;
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+};
+
+window.panRight = function () {
+  const increment = Math.min(Math.abs(currentMinReal * PAN_INCREMENT), Math.abs(currentMaxReal) * PAN_INCREMENT);
+  currentMinReal += increment;
+  currentMaxReal += increment;
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 };
