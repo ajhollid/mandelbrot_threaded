@@ -1,29 +1,119 @@
 <!DOCTYPE html>
+
 <head>
+    <link rel="stylesheet" type="text/css" href="normalize.css">
+    <link rel="stylesheet" type="text/css" href="skeleton.css">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <html>
-    <body>
-        <div class="container">
-            <canvas id="canvas"></canvas>
-            <div class="overlay">
-                <input class="jscolor" id ='1' onchange="update(this.jscolor, 0)" value="000764">               
+
+<body>
+
+    <canvas id="canvas"></canvas>
+    <div class="container u-full-width u-max-full-width">
+        <div class="row outer-row">
+            <div class="two columns control-box">
+                <div class="input-box">
+                    <input class="jscolor" id='1' onchange="update(this.jscolor, 0)" value="000764">
+                    <br>
+                    <input class="jscolor" onchange="update(this.jscolor, 1)" value="206BCB">
+                    <br>
+                    <input class="jscolor" onchange="update(this.jscolor, 2)" value="EDFFFF">
+                    <br>
+                    <input class="jscolor" onchange="update(this.jscolor, 3)" value="FFAA00">
+                    <br>
+                    <input class="jscolor" onchange="update(this.jscolor, 4)" value="000200">
+                    <br>
+                </div>
+            </div>
+            <div class="ten columns"></div>
+        </div>
+        <div class="row outer-row">
+            <div class="two columns control-box">
+                <div class="container u-full-width u-max-full-width">
+                    <div class="info-box">
+                        <div class="row">
+                            <div class="six columns">
+                                <span>Min. Real</span>
+                            </div>
+                            <div class="six columns">
+                                <input id="minReal">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="six columns">
+                                <span>Max. Real</span>
+                            </div>
+                            <div class="six columns">
+                                <input id="maxReal">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="six columns">
+                                <span>Min. Imaginary</span>
+                            </div>
+                            <div class="six columns">
+                                <input id="minImag">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="six columns">
+                                <span>Max. Imaginary</span>
+                            </div>
+                            <div class="six columns">
+                                <input id="maxImaginary">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ten columns"></div>
+        </div>
+        <div class="row outer-row">
+            <div class="two columns pan-controls control-box">
                 <br>
-                <input class="jscolor" onchange="update(this.jscolor, 1)" value="206BCB">
+                <button onclick="pan(0)" class="pan-button">up</button>
                 <br>
-                <input class="jscolor" onchange="update(this.jscolor, 2)" value="EDFFFF">
-                <br>
-                <input class="jscolor" onchange="update(this.jscolor, 3)" value="FFAA00">
-                <br>
-                <input class="jscolor" onchange="update(this.jscolor, 4)" value="000200">
-                <br>
-                <br>
-                <button onclick="pan(0)">up</button>
-                <br>
-                <button onclick="pan(3)">left</button></button><button onclick="pan(2)">down</button><button onclick="pan(1)">right</button>
+                <button onclick="pan(3)" class="pan-button">left</button></button><button onclick="pan(2)" class="pan-button">down</button><button
+                    onclick="pan(1)" class="pan-button">right</button>
+            </div>
+            <div class="eight columns"></div>
+        </div>
+        <div class="row outer-row">
+            <div class="two columns control-box">
+                <div class="title-box">
+                    <span><a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set</a></span>
+                </div>
+                <div class="info-box">
+                    <div class="divider"></div>
+                    <span>Click anywhere on the set to zoom in</span>
+                    <br>
+                    <span>Use the buttons to pan</span>
+                    <br>
+                    <span>Click on the colors to choose your own gradient</span>
+                    <br>
+                    <div class="divider"></div>
+                    <div class="contact-info">
+                        <div class="container u-full-width u-max-full-width">
+                            <div class="row">
+                                <div class="six columns ">
+                                    <span><a href="https://github.com/popnfresh234/mandelbrot_threaded">Source Code</a></span>
+                                </div>
+                                <div class="six columns ">
+                                    <span><a href="mailto:ajhollid@gmail.com">Contact</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <script src="jscolor.js"></script>
-        <script src="bundle.js"></script>
-    </body>
+        <div class="ten columns"></div>
+    </div>
+    </div>
+
+    <script src="jscolor.js"></script>
+    <script src="bundle.js"></script>
+</body>
+
 </html>

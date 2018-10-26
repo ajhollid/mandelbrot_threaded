@@ -11,7 +11,13 @@ module.exports = {
       {
         from: './src/index.html', to: './index.html',
       }, {
-        from: './src/style.css', to: './style.css',
+        from: './src/css/style.css', to: './style.css',
+      },
+      {
+        from: './src/css/normalize.css', to: './normalize.css',
+      },
+      {
+        from: './src/css/skeleton.css', to: './skeleton.css',
       },
       {
         from: './src/scripts/jscolor.js', to: './jscolor.js',
