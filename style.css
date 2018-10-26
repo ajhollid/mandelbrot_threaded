@@ -1,18 +1,63 @@
-.container{
-    position: relative;
-}
-
-.container canvas, .overlay {
-    position: absolute;
-}
+a {
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+  }
 
 canvas {
-    border: 1px solid black
+    position: absolute;
+    z-index: -1;
 }
 
-.overlay{
+.divider {
+    height: 1px;
+    margin: 1em 0;
+    background: #898989;
+}
+.control-box {
+    background-color: #20202098;
+    padding: 0.5em
+}
+
+.pan-controls{
     text-align: center;
-    margin: 2em;
-    padding: 0.5em;
-    border: 1px solid red
+}
+
+/* .outer-row:nth-of-type(1) {
+    padding-top: 2em;
+}
+
+.outer-row {
+    padding-left: 2em;
+} */
+
+.pan-button {
+    padding: 0 1em;
+}
+
+input {
+    width: 100%;
+}
+
+label {
+    display : inline;
+    padding-right : 4px;
+}
+
+.title-box {
+    text-align: center;
+    font-size: 2em;
+    color:#898989;
+}
+
+.info-box {
+    font-size: 0.7em;
+    color:#898989;
+}
+
+.info-box input {
+    margin-bottom: 0;
+}
+
+.contact-info{
+    text-align: center;
 }
