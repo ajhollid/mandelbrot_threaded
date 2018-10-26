@@ -32,8 +32,7 @@ const DEFAULT_COLORS = [
 
 ];
 const currentColors = DEFAULT_COLORS;
-
-let COLORS = createColors(MAX_COLORS, currentColors);
+let COLORS = [];
 
 let currentMinReal = DEF_MIN_REAL;
 let currentMaxReal = DEF_MAX_REAL;
@@ -87,6 +86,8 @@ function setInfo(dimens) {
 }
 
 function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
+  // Generate colors
+  COLORS = createColors(MAX_COLORS, currentColors);
   // Correct for aspect ratio
   const ratio = Math.abs(maxReal - minReal) / Math.abs(maxImaginary - minImaginary);
   const sratio = CANVAS_WIDTH / CANVAS_HEIGHT;
@@ -187,7 +188,6 @@ function handleZoom(event, zoomStep) {
 drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 
 canvasContainer.addEventListener('click', (e) => {
-  console.log('wtf');
   handleZoom(e, ZOOM_STEP);
 });
 
@@ -201,7 +201,6 @@ window.update = function (colorData, colorNumber) {
   const g = Math.round(colorData.rgb[1]);
   const b = Math.round(colorData.rgb[2]);
   currentColors[colorNumber] = { r, g, b };
-  COLORS = createColors(MAX_COLORS, currentColors);
   drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
   document.getElementsByClassName('jscolor')[colorNumber].jscolor.hide();
 };
