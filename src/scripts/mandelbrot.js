@@ -6,6 +6,7 @@ const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 const MAX_ITERATIONS = 1000;
 const BAILOUT_RADIUS = 2 ** 8;
+const MAX_COLORS = 2 ** 11;
 
 
 // Default values for initialization
@@ -17,7 +18,17 @@ const DEF_MIN_IMAGINARY = -1.4;
 const DEF_MAX_IMAGINARY = 1.5;
 
 // Colors
-const COLORS = createColors();
+const DEFAULT_COLORS = [
+  { r: 0, g: 7, b: 100 },
+  { r: 32, g: 107, b: 203 },
+  { r: 237, g: 255, b: 255 },
+  { r: 255, g: 170, b: 0 },
+  { r: 0, g: 2, b: 0 },
+
+];
+const currentColors = DEFAULT_COLORS;
+
+const COLORS = createColors(MAX_COLORS, currentColors);
 
 let currentMinReal = DEF_MIN_REAL;
 let currentMaxReal = DEF_MAX_REAL;

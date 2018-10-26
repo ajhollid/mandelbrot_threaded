@@ -1,7 +1,5 @@
 // Source: https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
-const MAX_COLORS = 2 ** 11;
-export default function createColors() {
-  const colors = [];
+export default function createColors(maxColors, colors) {
   const createInterpolant = function (xs, ys) {
     let i = xs.length;
     const { length } = xs;
@@ -96,7 +94,7 @@ export default function createColors() {
 
 
   function createChannelArray(array, interpolant) {
-    for (let x = 0; x < 1; x += 1 / MAX_COLORS) {
+    for (let x = 0; x < 1; x += 1 / maxColors) {
       const xSquared = interpolant(x);
       array.push(xSquared);
     }
@@ -108,19 +106,29 @@ export default function createColors() {
 
   createChannelArray(
     rArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [0, 32, 237, 255, 0]),
+    createInterpolant(
+      [0, 0.16, 0.42, 0.6425, 0.8575],
+      [colors[0].r, colors[1].r, colors[2].r, colors[3].r, colors[4].r],
+    ),
   );
   createChannelArray(
     gArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [7, 107, 255, 170, 2]),
+    createInterpolant(
+      [0, 0.16, 0.42, 0.6425, 0.8575],
+      [colors[0].g, colors[1].g, colors[2].g, colors[3].g, colors[4].g],
+    ),
   );
   createChannelArray(
     bArray,
-    createInterpolant([0, 0.16, 0.42, 0.6425, 0.8575], [100, 203, 255, 0, 0]),
+    createInterpolant(
+      [0, 0.16, 0.42, 0.6425, 0.8575],
+      [colors[0].b, colors[1].b, colors[2].b, colors[3].b, colors[4].b],
+    ),
   );
 
+  const colorArray = [];
   for (let i = 0; i < bArray.length; i++) {
-    colors.push(`rgb(${rArray[i]},${gArray[i]},${bArray[i]})`);
+    colorArray.push(`rgb(${rArray[i]},${gArray[i]},${bArray[i]})`);
   }
-  return colors;
+  return colorArray;
 }
