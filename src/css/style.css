@@ -1,9 +1,9 @@
 a {
-    color: inherit; /* blue colors for links too */
-    text-decoration: inherit; /* no underline */
+    color: inherit; 
+    text-decoration: inherit; 
   }
 
-canvas {
+#canvas {
     position: absolute;
     z-index: -1;
 }
@@ -22,19 +22,13 @@ canvas {
     text-align: center;
 }
 
-/* .outer-row:nth-of-type(1) {
-    padding-top: 2em;
-}
-
-.outer-row {
-    padding-left: 2em;
-} */
-
 .pan-button {
     padding: 0 1em;
 }
 
 input {
+    padding: 0.2em;
+    border: 0;
     width: 100%;
 }
 
@@ -58,6 +52,11 @@ label {
     margin-bottom: 0;
 }
 
+.dimens-text {
+    text-align: right;
+}
+
 .contact-info{
     text-align: center;
 }
+

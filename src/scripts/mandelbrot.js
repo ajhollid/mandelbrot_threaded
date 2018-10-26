@@ -42,6 +42,7 @@ let currentMaxImaginary = DEF_MAX_IMAGINARY;
 
 
 // Set up canvas
+const canvasContainer = document.getElementById('canvas-container');
 const myCanvas = document.getElementById('canvas');
 myCanvas.width = CANVAS_WIDTH;
 myCanvas.height = CANVAS_HEIGHT;
@@ -59,6 +60,30 @@ function calcImaginaryFactor(maxImaginary, minImaginary) {
 
 function interpolate(start, end, interpolation) {
   return start + ((end - start) * interpolation);
+}
+
+function setInfo(dimens) {
+  const dimenObj = {
+    0() {
+      return document.getElementById('minReal');
+    },
+    1() {
+      return document.getElementById('maxReal');
+    },
+    2() {
+      return document.getElementById('minImag');
+    },
+    3() {
+      return document.getElementById('maxImag');
+    },
+  };
+  for (let i = 0; i < dimens.length; i++) {
+    const fn = dimenObj[i];
+    if (fn) {
+      const dimenSpan = fn();
+      dimenSpan.textContent = dimens[i];
+    }
+  }
 }
 
 function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
@@ -125,6 +150,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       }
     };
   }
+  setInfo([currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary]);
 }
 
 function applyZoom(mouseReal, mouseImaginary) {
@@ -160,11 +186,12 @@ function handleZoom(event, zoomStep) {
 
 drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 
-myCanvas.addEventListener('click', (e) => {
+canvasContainer.addEventListener('click', (e) => {
+  console.log('wtf');
   handleZoom(e, ZOOM_STEP);
 });
 
-myCanvas.addEventListener('contextmenu', (e) => {
+canvasContainer.addEventListener('contextmenu', (e) => {
   handleZoom(e, 1 / ZOOM_STEP);
 });
 
