@@ -40,16 +40,50 @@
   width: 100%;
   float: left;
   box-sizing: border-box; }
+  .one.column,
+  .one.columns                    { width: 4.66666666667%; }
+  .two.columns                    { width: 42%; }
+  .three.columns                  { width: 22%;            }
+  .four.columns                   { width: 30.6666666667%; }
+  .five.columns                   { width: 39.3333333333%; }
+  .six.columns                    { width: 48%;            }
+  .seven.columns                  { width: 56.6666666667%; }
+  .eight.columns                  { width: 65.3333333333%; }
+  .nine.columns                   { width: 74.0%;          }
+  .ten.columns                    { width: 82.6666666667%; }
+  .eleven.columns                 { width: 91.3333333333%; }
+  .twelve.columns                 { width: 100%; margin-left: 0; }
 
 /* For devices larger than 400px */
 @media (min-width: 400px) {
   .container {
     width: 85%;
-    padding: 0; }
+    padding: 0; 
+  }
 }
 
-/* For devices larger than 550px */
-@media (min-width: 550px) {
+@media (min-width: 600px) {
+  .columns {
+    width: 100%;
+    float: left;
+    box-sizing: border-box; }
+    .one.column,
+    .one.columns                    { width: 4.66666666667%; }
+    .two.columns                    { width: 35%; }
+    .three.columns                  { width: 22%;            }
+    .four.columns                   { width: 30.6666666667%; }
+    .five.columns                   { width: 39.3333333333%; }
+    .six.columns                    { width: 48%;            }
+    .seven.columns                  { width: 56.6666666667%; }
+    .eight.columns                  { width: 65.3333333333%; }
+    .nine.columns                   { width: 74.0%;          }
+    .ten.columns                    { width: 82.6666666667%; }
+    .eleven.columns                 { width: 91.3333333333%; }
+    .twelve.columns                 { width: 100%; margin-left: 0; }
+}
+
+/* For devices larger than 1000 */
+@media (min-width: 1000px) {
   .container {
     width: 80%; }
   .column,
@@ -61,7 +95,7 @@
 
   .one.column,
   .one.columns                    { width: 4.66666666667%; }
-  .two.columns                    { width: 13.3333333333%; }
+  .two.columns                    { width: 21.3333333333%; }
   .three.columns                  { width: 22%;            }
   .four.columns                   { width: 30.6666666667%; }
   .five.columns                   { width: 39.3333333333%; }
@@ -112,6 +146,11 @@
 
 }
 
+@media (min-width: 1600px) {
+  .two.columns { 
+    width: 13.3333333333%; 
+  }
+}
 
 /* Base Styles
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
