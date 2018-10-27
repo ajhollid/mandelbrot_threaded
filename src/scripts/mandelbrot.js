@@ -1,28 +1,29 @@
 import createColors from './colors';
 import Worker from './mandelbrot.worker';
+import Utils from './utils';
 
-
-const CANVAS_WIDTH = window.innerWidth;
-const CANVAS_HEIGHT = window.innerHeight;
+// Key values for generating set
+const MAX_WORKERS = 6;
 const MAX_ITERATIONS = 1000;
 const BAILOUT_RADIUS = 2 ** 8;
-const MAX_COLORS = 2 ** 11;
 
-
-// Default values for initialization
-
-const MAX_WORKERS = 6;
-const DEF_MIN_REAL = -2;
-const DEF_MAX_REAL = 1.3;
-const DEF_MIN_IMAGINARY = -1.4;
-const DEF_MAX_IMAGINARY = 1.5;
-
-// Zoom and Pan constants
+// Dimens for drawing
+const CANVAS_WIDTH = window.innerWidth;
+const CANVAS_HEIGHT = window.innerHeight;
+const DEFAULT_DIMENS = {
+  minReal: -2,
+  maxReal: 1.3,
+  minImaginary: -1.4,
+  maxImaginary: 1.5,
+};
 const ZOOM_STEP = 1.5;
 const PAN_INCREMENT = 0.02;
 let zoomFactor = 1;
+let currentDimens = {};
+
 
 // Colors
+const MAX_COLORS = 2 ** 11;
 const DEFAULT_COLORS = [
   { r: 0, g: 7, b: 100 },
   { r: 32, g: 107, b: 203 },
@@ -32,12 +33,7 @@ const DEFAULT_COLORS = [
 
 ];
 let currentColors = DEFAULT_COLORS.slice();
-let COLORS = [];
-
-let currentMinReal = null;
-let currentMaxReal = null;
-let currentMinImaginary = null;
-let currentMaxImaginary = null;
+let colorArray = [];
 
 // Set up canvas
 const myCanvas = document.getElementById('canvas');
@@ -47,25 +43,7 @@ const X_OFFSET = myCanvas.offsetLeft;
 const Y_OFFSET = myCanvas.offsetTop;
 const context = myCanvas.getContext('2d');
 
-function setDefaultDimens() {
-  currentMinReal = DEF_MIN_REAL;
-  currentMaxReal = DEF_MAX_REAL;
-  currentMinImaginary = DEF_MIN_IMAGINARY;
-  currentMaxImaginary = DEF_MAX_IMAGINARY;
-}
-
-function calcRealFactor(maxReal, minReal) {
-  return (maxReal - minReal) / (CANVAS_WIDTH);
-}
-
-function calcImaginaryFactor(maxImaginary, minImaginary) {
-  return (maxImaginary - minImaginary) / (CANVAS_HEIGHT);
-}
-
-function interpolate(start, end, interpolation) {
-  return start + ((end - start) * interpolation);
-}
-
+// Sets the key info in the info box
 function setInfo(dimens) {
   const dimenObj = {
     0: () => document.getElementById('minReal'),
@@ -73,20 +51,29 @@ function setInfo(dimens) {
     2: () => document.getElementById('minImag'),
     3: () => document.getElementById('maxImag'),
   };
-  for (let i = 0; i < dimens.length; i++) {
+  // Iterate over the keys in the dimens object
+  for (let i = 0; i < Object.keys(dimens).length; i++) {
     const fn = dimenObj[i];
     if (fn) {
       const dimenSpan = fn();
-      dimenSpan.textContent = dimens[i];
+      // Pull out the appropriate dimension
+      dimenSpan.textContent = dimens[Object.keys(dimens)[i]];
     }
   }
 }
 
-function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
+function drawMandelbrot(dimens) {
+  let {
+    minReal,
+    maxReal,
+    minImaginary,
+    maxImaginary,
+  } = dimens;
   // Generate colors
-  COLORS = createColors(MAX_COLORS, currentColors);
+  colorArray = createColors(MAX_COLORS, currentColors);
   // Correct for aspect ratio
-  const ratio = Math.abs(maxReal - minReal) / Math.abs(maxImaginary - minImaginary);
+  const ratio = Math.abs(dimens.maxReal - dimens.minReal)
+    / Math.abs(dimens.maxImaginary - dimens.minImaginary);
   const sratio = CANVAS_WIDTH / CANVAS_HEIGHT;
   if (sratio > ratio) {
     const xf = sratio / ratio;
@@ -99,16 +86,14 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
   }
 
   // Calculate factors to convert X and Y to real and imaginary components of a compelx number
-  const realFactor = calcRealFactor(maxReal, minReal);
-  const imaginaryFactor = calcImaginaryFactor(maxImaginary, minImaginary);
+  const realFactor = Utils.calcRealFactor(maxReal, minReal, CANVAS_WIDTH);
+  const imaginaryFactor = Utils.calcImaginaryFactor(maxImaginary, minImaginary, CANVAS_HEIGHT);
   const workerFunction = function (e) {
     const { points } = e.data;
     for (let i = 0; i < points.length; i++) {
-      const point = points[i];
-      const { y, fillStyle } = point;
-      const currentX = e.data.x;
+      const { y, fillStyle } = points[i];
       context.fillStyle = fillStyle;
-      context.fillRect(currentX, y, 1, 1);
+      context.fillRect(e.data.x, y, 1, 1);
     }
     let currentX = e.data.x;
     // Start work on the column MAX_WORKERS down the axis
@@ -121,7 +106,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
         BAILOUT_RADIUS,
         x: currentX,
         CANVAS_HEIGHT,
-        COLORS,
+        colorArray,
         realFactor,
         imaginaryFactor,
         minReal,
@@ -139,7 +124,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       BAILOUT_RADIUS,
       x,
       CANVAS_HEIGHT,
-      COLORS,
+      colorArray,
       realFactor,
       imaginaryFactor,
       minReal,
@@ -149,48 +134,31 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
     });
     worker.onmessage = workerFunction;
   }
-  setInfo([currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary]);
+  setInfo(currentDimens);
 }
 
-function applyZoom(mouseReal, mouseImaginary) {
-  // Create a new zoomed in view rectangle
-  const interpolation = 1.0 / zoomFactor;
-  currentMinReal = interpolate(mouseReal, currentMinReal, interpolation);
-  currentMinImaginary = interpolate(mouseImaginary, currentMinImaginary, interpolation);
-  currentMaxReal = interpolate(mouseReal, currentMaxReal, interpolation);
-  currentMaxImaginary = interpolate(mouseImaginary, currentMaxImaginary, interpolation);
-
-  // Center on the mouse click
-  const centerReal = (currentMinReal + currentMaxReal) / 2;
-  const centerImaginary = (currentMinImaginary + currentMaxImaginary) / 2;
-  const deltaReal = centerReal - mouseReal;
-  const deltaImaginary = centerImaginary - mouseImaginary;
-
-  currentMinReal -= deltaReal;
-  currentMaxReal -= deltaReal;
-  currentMinImaginary -= deltaImaginary;
-  currentMaxImaginary -= deltaImaginary;
-}
-
-function handleZoom(event, zoomStep) {
-  event.preventDefault();
-  const realFactor = calcRealFactor(currentMaxReal, currentMinReal);
-  const imaginaryFactor = calcImaginaryFactor(currentMaxImaginary, currentMinImaginary);
-  const mouseReal = currentMinReal + (event.clientX - X_OFFSET) * realFactor;
-  const mouseImaginary = currentMinImaginary + (event.clientY - Y_OFFSET) * imaginaryFactor;
-  zoomFactor *= zoomStep;
-  applyZoom(mouseReal, mouseImaginary);
-  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
-}
 
 // Get clicks on background canvas via bubbling
 const body = document.getElementsByTagName('body')[0];
+
+// Handle zoom in
 body.addEventListener('click', (e) => {
-  handleZoom(e, ZOOM_STEP);
+  const zoomResults = Utils.handleZoom(
+    e,
+    ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
+  );
+  ({ currentDimens, zoomFactor } = zoomResults);
+  drawMandelbrot(currentDimens);
 });
 
+// Handle zoom out
 body.addEventListener('contextmenu', (e) => {
-  handleZoom(e, 1 / ZOOM_STEP);
+  const zoomResults = Utils.handleZoom(
+    e,
+    1 / ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
+  );
+  ({ currentDimens, zoomFactor } = zoomResults);
+  drawMandelbrot(currentDimens);
 });
 
 // Block all clicks on the control/info area
@@ -204,50 +172,49 @@ for (let i = 0; i < elementsToBlock.length; i++) {
 
 
 // handle color picking
-window.update = function (colorData, colorNumber) {
-  const r = Math.round(colorData.rgb[0]);
-  const g = Math.round(colorData.rgb[1]);
-  const b = Math.round(colorData.rgb[2]);
-  currentColors[colorNumber] = { r, g, b };
-  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
-  document.getElementsByClassName('jscolor')[colorNumber].jscolor.hide();
+window.updateColor = function (colorData, gradientPosition) {
+  // Round values in color array, destructure and assign to r, g, b
+  const [r, g, b] = colorData.rgb.map(colorChannel => Math.round(colorChannel));
+  currentColors[gradientPosition] = { r, g, b };
+  drawMandelbrot(currentDimens);
+  document.getElementsByClassName('jscolor')[gradientPosition].jscolor.hide();
 };
 
 // Handles panning around the image via control buttons
 function handlePan(direction) {
   // Get the min increment to pan by
   const increment = Math.min(
-    Math.abs(currentMinImaginary * PAN_INCREMENT),
-    Math.abs(currentMaxImaginary * PAN_INCREMENT),
+    Math.abs(currentDimens.minImaginary * PAN_INCREMENT),
+    Math.abs(currentDimens.maxImaginary * PAN_INCREMENT),
   );
   // Pan object literal for lookup
   const panTypes = {
     0: () => {
       // up
-      currentMinImaginary += increment;
-      currentMaxImaginary += increment;
+      currentDimens.minImaginary += increment;
+      currentDimens.maxImaginary += increment;
     },
     1: () => {
       // right
-      currentMinReal += increment;
-      currentMaxReal += increment;
+      currentDimens.minReal += increment;
+      currentDimens.maxReal += increment;
     },
     2: () => {
       // down
-      currentMinImaginary -= increment;
-      currentMaxImaginary -= increment;
+      currentDimens.minImaginary -= increment;
+      currentDimens.maxImaginary -= increment;
     },
     4: () => {
       // left
-      currentMinReal -= increment;
-      currentMaxReal -= increment;
+      currentDimens.minReal -= increment;
+      currentDimens.maxReal -= increment;
     },
   };
 
   const fn = panTypes[direction];
   if (fn) {
     fn();
-    drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+    drawMandelbrot(currentDimens);
   }
 }
 
@@ -257,16 +224,15 @@ window.pan = function (e, direction) {
 };
 
 window.reset = () => {
-  setDefaultDimens();
+  currentDimens = { ...DEFAULT_DIMENS };
   currentColors = DEFAULT_COLORS.slice();
   const inputs = document.getElementsByClassName('jscolor');
-  console.log(currentColors[0]);
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
     input.jscolor.fromRGB(currentColors[i].r, currentColors[i].g, currentColors[i].b);
   }
-  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+  drawMandelbrot(currentDimens);
 };
 
-setDefaultDimens();
-drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+currentDimens = { ...DEFAULT_DIMENS };
+drawMandelbrot(currentDimens);

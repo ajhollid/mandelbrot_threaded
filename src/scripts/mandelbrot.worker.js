@@ -25,8 +25,8 @@ function drawLine(data) {
       const z = Math.sqrt(zReal * zReal + zImaginary * zImaginary);
       // Create smooth color transitions
       const smoothed = Math.log(Math.log(z) * 1 / Math.log(2)) * 1 / Math.log(2);
-      const colorI = parseInt((Math.sqrt(iterations + 1 - smoothed) * 256 - 250) % data.COLORS.length, 10);
-      const color = data.COLORS[colorI];
+      const colorI = parseInt((Math.sqrt(iterations + 1 - smoothed) * 256 - 250) % data.colorArray.length, 10);
+      const color = data.colorArray[colorI];
       points.push({
         y,
         fillStyle: color,
