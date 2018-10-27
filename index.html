@@ -15,7 +15,7 @@
         <div class="row outer-row">
             <div class="two columns control-box block">
                 <div class="input-box">
-                    <input class="jscolor" id='1' onchange="update( this.jscolor, 0)" value="000764" required="false">
+                    <input class="jscolor" onchange="update( this.jscolor, 0)" value="000764" required="false">
                     <br>
                     <input class="jscolor" onchange="update( this.jscolor, 1)" value="206BCB">
                     <br>
@@ -30,7 +30,7 @@
             <div class="ten columns"></div>
         </div>
         <div class="row outer-row">
-            <div class="two columns control-box block" >
+            <div class="two columns control-box block">
                 <div class="container u-full-width u-max-full-width">
                     <div class="info-box">
                         <div class="row">
@@ -71,13 +71,15 @@
             <div class="ten columns"></div>
         </div>
         <div class="row outer-row">
-            <div class="two columns pan-controls control-box block" >
+            <div class="two columns pan-controls control-box block">
                 <br>
                 <button onclick="pan(event, 0)" class="pan-button">up</button>
                 <br>
                 <button onclick="pan(event, 3)" class="pan-button">left</button>
                 <button onclick="pan(event, 2)" class="pan-button">down</button>
                 <button onclick="pan(event, 1)" class="pan-button">right</button>
+                <div class="divider"></div>
+                <button onclick="reset()">Reset</button>
             </div>
             <div class="eight columns"></div>
         </div>
