@@ -1,7 +1,3 @@
-function receiveMessage(event) {
-  drawLine(event.data);
-}
-
 function drawLine(data) {
   const points = [];
   for (let y = 0; y < data.CANVAS_HEIGHT; y++) {
@@ -30,7 +26,6 @@ function drawLine(data) {
       // Create smooth color transitions
       const smoothed = Math.log(Math.log(z) * 1 / Math.log(2)) * 1 / Math.log(2);
       const colorI = parseInt((Math.sqrt(iterations + 1 - smoothed) * 256 - 250) % data.COLORS.length, 10);
-
       const color = data.COLORS[colorI];
       points.push({
         y,
@@ -42,6 +37,10 @@ function drawLine(data) {
     x: data.x,
     points,
   });
+}
+
+function receiveMessage(event) {
+  drawLine(event.data);
 }
 
 onmessage = receiveMessage;

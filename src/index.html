@@ -13,24 +13,24 @@
     </div>
     <div class="container u-full-width u-max-full-width">
         <div class="row outer-row">
-            <div class="two columns control-box">
+            <div class="two columns control-box block">
                 <div class="input-box">
-                    <input class="jscolor" id='1' onchange="update(this.jscolor, 0)" value="000764" required="false">
+                    <input class="jscolor" id='1' onchange="update( this.jscolor, 0)" value="000764" required="false">
                     <br>
-                    <input class="jscolor" onchange="update(this.jscolor, 1)" value="206BCB">
+                    <input class="jscolor" onchange="update( this.jscolor, 1)" value="206BCB">
                     <br>
                     <input class="jscolor" onchange="update(this.jscolor, 2)" value="EDFFFF">
                     <br>
-                    <input class="jscolor" onchange="update(this.jscolor, 3)" value="FFAA00">
+                    <input class="jscolor" onchange="update( this.jscolor, 3)" value="FFAA00">
                     <br>
-                    <input class="jscolor" onchange="update(this.jscolor, 4)" value="000200">
+                    <input class="jscolor" onchange="update( this.jscolor, 4)" value="000200">
                     <br>
                 </div>
             </div>
             <div class="ten columns"></div>
         </div>
         <div class="row outer-row">
-            <div class="two columns control-box">
+            <div class="two columns control-box block" >
                 <div class="container u-full-width u-max-full-width">
                     <div class="info-box">
                         <div class="row">
@@ -71,17 +71,18 @@
             <div class="ten columns"></div>
         </div>
         <div class="row outer-row">
-            <div class="two columns pan-controls control-box">
+            <div class="two columns pan-controls control-box block" >
                 <br>
-                <button onclick="pan(0)" class="pan-button">up</button>
+                <button onclick="pan(event, 0)" class="pan-button">up</button>
                 <br>
-                <button onclick="pan(3)" class="pan-button">left</button></button><button onclick="pan(2)" class="pan-button">down</button><button
-                    onclick="pan(1)" class="pan-button">right</button>
+                <button onclick="pan(event, 3)" class="pan-button">left</button>
+                <button onclick="pan(event, 2)" class="pan-button">down</button>
+                <button onclick="pan(event, 1)" class="pan-button">right</button>
             </div>
             <div class="eight columns"></div>
         </div>
         <div class="row outer-row">
-            <div class="two columns control-box">
+            <div class="two columns control-box block">
                 <div class="title-box">
                     <span><a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set</a></span>
                 </div>

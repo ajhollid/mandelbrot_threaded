@@ -1,4 +1,4 @@
-import createColors from './colors.js';
+import createColors from './colors';
 import Worker from './mandelbrot.worker';
 
 
@@ -39,9 +39,7 @@ let currentMaxReal = DEF_MAX_REAL;
 let currentMinImaginary = DEF_MIN_IMAGINARY;
 let currentMaxImaginary = DEF_MAX_IMAGINARY;
 
-
 // Set up canvas
-const canvasContainer = document.getElementById('canvas-container');
 const myCanvas = document.getElementById('canvas');
 myCanvas.width = CANVAS_WIDTH;
 myCanvas.height = CANVAS_HEIGHT;
@@ -63,18 +61,10 @@ function interpolate(start, end, interpolation) {
 
 function setInfo(dimens) {
   const dimenObj = {
-    0() {
-      return document.getElementById('minReal');
-    },
-    1() {
-      return document.getElementById('maxReal');
-    },
-    2() {
-      return document.getElementById('minImag');
-    },
-    3() {
-      return document.getElementById('maxImag');
-    },
+    0: () => document.getElementById('minReal'),
+    1: () => document.getElementById('maxReal'),
+    2: () => document.getElementById('minImag'),
+    3: () => document.getElementById('maxImag'),
   };
   for (let i = 0; i < dimens.length; i++) {
     const fn = dimenObj[i];
@@ -104,7 +94,36 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
   // Calculate factors to convert X and Y to real and imaginary components of a compelx number
   const realFactor = calcRealFactor(maxReal, minReal);
   const imaginaryFactor = calcImaginaryFactor(maxImaginary, minImaginary);
-
+  const workerFunction = function (e) {
+    const { points } = e.data;
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
+      const { y, fillStyle } = point;
+      const currentX = e.data.x;
+      context.fillStyle = fillStyle;
+      context.fillRect(currentX, y, 1, 1);
+    }
+    let currentX = e.data.x;
+    // Start work on the column MAX_WORKERS down the axis
+    currentX += MAX_WORKERS;
+    // If we haven't reached the end of the canvas
+    if (currentX < CANVAS_WIDTH) {
+      // Send a message to the current worker to work on the next x
+      this.postMessage({
+        MAX_ITERATIONS,
+        BAILOUT_RADIUS,
+        x: currentX,
+        CANVAS_HEIGHT,
+        COLORS,
+        realFactor,
+        imaginaryFactor,
+        minReal,
+        maxReal,
+        minImaginary,
+        maxImaginary,
+      });
+    }
+  };
   // Create worker threads and have each thread handle one column of data
   for (let x = 0; x < MAX_WORKERS; x++) {
     const worker = new Worker();
@@ -121,35 +140,7 @@ function drawMandelbrot(minReal, maxReal, minImaginary, maxImaginary) {
       minImaginary,
       maxImaginary,
     });
-    worker.onmessage = function (e) {
-      const { points } = e.data;
-      for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const { y, fillStyle } = point;
-        const currentX = e.data.x;
-        context.fillStyle = fillStyle;
-        context.fillRect(currentX, y, 1, 1);
-      }
-      let currentX = e.data.x;
-      // Start work on the column MAX_WORKERS down the axis
-      currentX += MAX_WORKERS;
-      // If we haven't reached the end of the canvas
-      if (currentX < CANVAS_WIDTH) {
-        worker.postMessage({
-          MAX_ITERATIONS,
-          BAILOUT_RADIUS,
-          x: currentX,
-          CANVAS_HEIGHT,
-          COLORS,
-          realFactor,
-          imaginaryFactor,
-          minReal,
-          maxReal,
-          minImaginary,
-          maxImaginary,
-        });
-      }
-    };
+    worker.onmessage = workerFunction;
   }
   setInfo([currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary]);
 }
@@ -185,15 +176,25 @@ function handleZoom(event, zoomStep) {
   drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
 }
 
-drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
-
-canvasContainer.addEventListener('click', (e) => {
+// Get clicks on background canvas via bubbling
+const body = document.getElementsByTagName('body')[0];
+body.addEventListener('click', (e) => {
   handleZoom(e, ZOOM_STEP);
 });
 
-canvasContainer.addEventListener('contextmenu', (e) => {
+body.addEventListener('contextmenu', (e) => {
   handleZoom(e, 1 / ZOOM_STEP);
 });
+
+// Block all clicks on the control/info area
+const elementsToBlock = document.getElementsByClassName('block');
+for (let i = 0; i < elementsToBlock.length; i++) {
+  const el = elementsToBlock[i];
+  el.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
+}
+
 
 // handle color picking
 window.update = function (colorData, colorNumber) {
@@ -205,33 +206,37 @@ window.update = function (colorData, colorNumber) {
   document.getElementsByClassName('jscolor')[colorNumber].jscolor.hide();
 };
 
+// Handles panning around the image via control buttons
 function handlePan(direction) {
+  // Get the min increment to pan by
+  const increment = Math.min(
+    Math.abs(currentMinImaginary * PAN_INCREMENT),
+    Math.abs(currentMaxImaginary * PAN_INCREMENT),
+  );
+  // Pan object literal for lookup
   const panTypes = {
-    0() {
+    0: () => {
       // up
       currentMinImaginary += increment;
       currentMaxImaginary += increment;
     },
-    1() {
+    1: () => {
       // right
       currentMinReal += increment;
       currentMaxReal += increment;
     },
-    2() {
+    2: () => {
       // down
       currentMinImaginary -= increment;
       currentMaxImaginary -= increment;
     },
-    3() {
+    4: () => {
       // left
       currentMinReal -= increment;
       currentMaxReal -= increment;
     },
   };
-  const increment = Math.min(
-    Math.abs(currentMinImaginary * PAN_INCREMENT),
-    Math.abs(currentMaxImaginary * PAN_INCREMENT),
-  );
+
   const fn = panTypes[direction];
   if (fn) {
     fn();
@@ -239,7 +244,10 @@ function handlePan(direction) {
   }
 }
 
-window.pan = function (direction) {
-  // handle panning
+window.pan = function (e, direction) {
+  e.stopPropagation();
   handlePan(direction);
 };
+
+
+drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
