@@ -31,13 +31,13 @@ const DEFAULT_COLORS = [
   { r: 0, g: 2, b: 0 },
 
 ];
-const currentColors = DEFAULT_COLORS;
+let currentColors = DEFAULT_COLORS.slice();
 let COLORS = [];
 
-let currentMinReal = DEF_MIN_REAL;
-let currentMaxReal = DEF_MAX_REAL;
-let currentMinImaginary = DEF_MIN_IMAGINARY;
-let currentMaxImaginary = DEF_MAX_IMAGINARY;
+let currentMinReal = null;
+let currentMaxReal = null;
+let currentMinImaginary = null;
+let currentMaxImaginary = null;
 
 // Set up canvas
 const myCanvas = document.getElementById('canvas');
@@ -46,6 +46,13 @@ myCanvas.height = CANVAS_HEIGHT;
 const X_OFFSET = myCanvas.offsetLeft;
 const Y_OFFSET = myCanvas.offsetTop;
 const context = myCanvas.getContext('2d');
+
+function setDefaultDimens() {
+  currentMinReal = DEF_MIN_REAL;
+  currentMaxReal = DEF_MAX_REAL;
+  currentMinImaginary = DEF_MIN_IMAGINARY;
+  currentMaxImaginary = DEF_MAX_IMAGINARY;
+}
 
 function calcRealFactor(maxReal, minReal) {
   return (maxReal - minReal) / (CANVAS_WIDTH);
@@ -249,5 +256,17 @@ window.pan = function (e, direction) {
   handlePan(direction);
 };
 
+window.reset = () => {
+  setDefaultDimens();
+  currentColors = DEFAULT_COLORS.slice();
+  const inputs = document.getElementsByClassName('jscolor');
+  console.log(currentColors[0]);
+  for (let i = 0; i < inputs.length; i++) {
+    const input = inputs[i];
+    input.jscolor.fromRGB(currentColors[i].r, currentColors[i].g, currentColors[i].b);
+  }
+  drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
+};
 
+setDefaultDimens();
 drawMandelbrot(currentMinReal, currentMaxReal, currentMinImaginary, currentMaxImaginary);
