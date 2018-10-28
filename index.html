@@ -65,6 +65,42 @@
                                 <span id="maxImag"></span>
                             </div>
                         </div>
+                        <div class="divider"></div>
+                        <div class="row">
+                            <div class="six columns option-label">
+                                <span>Iterations</span>
+                            </div>
+                            <div class="six columns dimens-text">
+                                <input type="number" class="option-input" id="iterations"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="six columns option-label">
+                                <span>Escape Radius</span>
+                            </div>
+                            <div class="six columns dimens-text">
+                                <input type="number" class="option-input" id="escapeRadius"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="six columns option-label">
+                                <span>Press to update -></span>
+                            </div>
+                            <div class="six columns dimens-text">
+                                <button class="update-button" onclick="updateMandelbrot()">Update</button>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="row">
+                            <div class="six columns option-label">
+                                <span >Zoom Step</span>
+                            </div>
+                            <div class="six columns dimens-text">
+                                <input type="number" oninput="handleZoomStep()" class="option-input" id="zoomStep"></span>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
                     </div>
                 </div>
             </div>
@@ -72,7 +108,7 @@
         </div>
         <div class="row outer-row">
             <div class="two columns pan-controls control-box block">
-                <br>
+            
                 <button onclick="pan(event, 0)" class="pan-button">up</button>
                 <br>
                 <button onclick="pan(event, 3)" class="pan-button">left</button>

@@ -48,9 +48,20 @@ label {
     color:#898989;
 }
 
+.info-box .option-input {
+    margin-bottom: 0.5em;
+    height: 3em;
+    line-height: 3em;
+}
+
+.option-label{
+    line-height: 3em;
+}
 .info-box input {
     margin-bottom: 0;
 }
+
+
 
 .dimens-text {
     text-align: right;
@@ -58,4 +69,9 @@ label {
 
 .contact-info{
     text-align: center;
+}
+
+.update-button{
+    height: 2em;
+    line-height: 2em;
 }
