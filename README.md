@@ -13,7 +13,7 @@ git clone https://github.com/popnfresh234/mandelbrot_threaded
 
 Install required node modules
 ```
-npm install`
+npm install
 ```
 Start the webpack development server to run the project locally
 ```
