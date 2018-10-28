@@ -1,5 +1,7 @@
 # Mandelbrot Set Viewer using Canvas and Worker API
 
+[View this project deployed here](https://popnfresh234.github.io/mandelbrot_threaded/)
+
 This project explores the [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) using the Canvas and [Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) APIs.  The visualization is colorized by normalizing the iteration count and using a [monotone cubic interpolation function](https://en.wikipedia.org/wiki/Monotone_cubic_interpolation) to generate a smooth color gradient from 5 anchor points.
 
 ![Mandelbrot Image](https://github.com/popnfresh234/mandelbrot_threaded/blob/master/docs/screen_shot.png)
