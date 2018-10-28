@@ -57,9 +57,48 @@ function handleZoom(
   return { currentDimens, zoomFactor };
 }
 
+// Handles panning around the image via control buttons
+function handlePan(direction, PAN_INCREMENT, dimens) {
+  const currentDimens = dimens;
+  // Get the min increment to pan by
+  const increment = Math.min(
+    Math.abs(currentDimens.minImaginary * PAN_INCREMENT),
+    Math.abs(currentDimens.maxImaginary * PAN_INCREMENT),
+  );
+  // Pan object literal for lookup
+  const panTypes = {
+    0: () => {
+      // up
+      currentDimens.minImaginary += increment;
+      currentDimens.maxImaginary += increment;
+    },
+    1: () => {
+      // right
+      currentDimens.minReal -= increment;
+      currentDimens.maxReal -= increment;
+    },
+    2: () => {
+      // down
+      currentDimens.minImaginary -= increment;
+      currentDimens.maxImaginary -= increment;
+    },
+    3: () => {
+      // left
+      currentDimens.minReal += increment;
+      currentDimens.maxReal += increment;
+    },
+  };
+
+  const fn = panTypes[direction];
+  if (fn) {
+    fn();
+  } return currentDimens;
+}
+
 module.exports = {
   calcRealFactor,
   calcImaginaryFactor,
   handleZoom,
+  handlePan,
 };
 
