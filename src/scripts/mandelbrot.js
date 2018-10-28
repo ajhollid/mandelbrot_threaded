@@ -176,7 +176,7 @@ body.addEventListener('click', (e) => {
 body.addEventListener('contextmenu', (e) => {
   const zoomResults = Utils.handleZoom(
     e,
-    1 / DEF_ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
+    1 / options.zoomStep, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
   );
   ({ currentDimens, zoomFactor } = zoomResults);
   drawMandelbrot(currentDimens, options);
