@@ -8,7 +8,7 @@ function drawLine(data) {
     let zImaginary = 0;
     let iterations = 0;
 
-    while (zReal * zReal + zImaginary * zImaginary <= data.BAILOUT_RADIUS && iterations < data.MAX_ITERATIONS) {
+    while (zReal * zReal + zImaginary * zImaginary <= data.options.escapeRadius && iterations < data.options.iterations) {
       const nextZReal = zReal * zReal - zImaginary * zImaginary + cReal;
       const nextZImaginary = 2 * zReal * zImaginary + cImaginary;
       zReal = nextZReal;
@@ -16,7 +16,7 @@ function drawLine(data) {
       iterations++;
     }
 
-    if (iterations === data.MAX_ITERATIONS) {
+    if (iterations === data.options.iterations) {
       points.push({
         y,
         fillStyle: 'black',

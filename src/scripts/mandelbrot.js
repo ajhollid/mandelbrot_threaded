@@ -4,8 +4,15 @@ import Utils from './utils';
 
 // Key values for generating set
 const MAX_WORKERS = 6;
-const MAX_ITERATIONS = 1000;
-const BAILOUT_RADIUS = 2 ** 8;
+const DEF_MAX_ITERATIONS = 1000;
+const DEF_ESCAPE_RADIUS = 2 ** 8;
+const DEF_ZOOM_STEP = 1.5;
+
+const options = {
+  iterations: DEF_MAX_ITERATIONS,
+  escapeRadius: DEF_ESCAPE_RADIUS,
+  zoomStep: DEF_ZOOM_STEP,
+};
 
 // Dimens for drawing
 const CANVAS_WIDTH = window.innerWidth;
@@ -16,7 +23,7 @@ const DEFAULT_DIMENS = {
   minImaginary: -1.4,
   maxImaginary: 1.5,
 };
-const ZOOM_STEP = 1.5;
+
 const PAN_INCREMENT = 0.02;
 let zoomFactor = 1;
 let currentDimens = {};
@@ -44,7 +51,7 @@ const Y_OFFSET = myCanvas.offsetTop;
 const context = myCanvas.getContext('2d');
 
 // Sets the key info in the info box
-function setInfo(dimens) {
+function setInfo(dimens, userOptions) {
   const dimenObj = {
     0: () => document.getElementById('minReal'),
     1: () => document.getElementById('maxReal'),
@@ -60,9 +67,25 @@ function setInfo(dimens) {
       dimenSpan.textContent = dimens[Object.keys(dimens)[i]];
     }
   }
+
+  // Set options:
+  const optionsObj = {
+    0: () => document.getElementById('iterations'),
+    1: () => document.getElementById('escapeRadius'),
+    2: () => document.getElementById('zoomStep'),
+  };
+
+  for (let j = 0; j < Object.keys(userOptions).length; j++) {
+    const fn = (optionsObj[j]);
+    if (fn) {
+      const optionInput = fn();
+      optionInput.value = userOptions[Object.keys(userOptions)[j]];
+    }
+  }
 }
 
-function drawMandelbrot(dimens) {
+
+function drawMandelbrot(dimens, userOptions) {
   let {
     minReal,
     maxReal,
@@ -102,8 +125,7 @@ function drawMandelbrot(dimens) {
     if (currentX < CANVAS_WIDTH) {
       // Send a message to the current worker to work on the next x
       this.postMessage({
-        MAX_ITERATIONS,
-        BAILOUT_RADIUS,
+        options: userOptions,
         x: currentX,
         CANVAS_HEIGHT,
         colorArray,
@@ -120,8 +142,7 @@ function drawMandelbrot(dimens) {
   for (let x = 0; x < MAX_WORKERS; x++) {
     const worker = new Worker();
     worker.postMessage({
-      MAX_ITERATIONS,
-      BAILOUT_RADIUS,
+      options: userOptions,
       x,
       CANVAS_HEIGHT,
       colorArray,
@@ -134,7 +155,7 @@ function drawMandelbrot(dimens) {
     });
     worker.onmessage = workerFunction;
   }
-  setInfo(currentDimens);
+  setInfo(currentDimens, options);
 }
 
 
@@ -145,20 +166,20 @@ const body = document.getElementsByTagName('body')[0];
 body.addEventListener('click', (e) => {
   const zoomResults = Utils.handleZoom(
     e,
-    ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
+    options.zoomStep, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
   );
   ({ currentDimens, zoomFactor } = zoomResults);
-  drawMandelbrot(currentDimens);
+  drawMandelbrot(currentDimens, options);
 });
 
 // Handle zoom out
 body.addEventListener('contextmenu', (e) => {
   const zoomResults = Utils.handleZoom(
     e,
-    1 / ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
+    1 / DEF_ZOOM_STEP, zoomFactor, currentDimens, CANVAS_WIDTH, CANVAS_HEIGHT, X_OFFSET, Y_OFFSET,
   );
   ({ currentDimens, zoomFactor } = zoomResults);
-  drawMandelbrot(currentDimens);
+  drawMandelbrot(currentDimens, options);
 });
 
 // Block all clicks on the control/info area
@@ -180,59 +201,50 @@ window.updateColor = function (colorData, gradientPosition) {
   document.getElementsByClassName('jscolor')[gradientPosition].jscolor.hide();
 };
 
-// Handles panning around the image via control buttons
-function handlePan(direction) {
-  // Get the min increment to pan by
-  const increment = Math.min(
-    Math.abs(currentDimens.minImaginary * PAN_INCREMENT),
-    Math.abs(currentDimens.maxImaginary * PAN_INCREMENT),
-  );
-  // Pan object literal for lookup
-  const panTypes = {
-    0: () => {
-      // up
-      currentDimens.minImaginary += increment;
-      currentDimens.maxImaginary += increment;
-    },
-    1: () => {
-      // right
-      currentDimens.minReal += increment;
-      currentDimens.maxReal += increment;
-    },
-    2: () => {
-      // down
-      currentDimens.minImaginary -= increment;
-      currentDimens.maxImaginary -= increment;
-    },
-    4: () => {
-      // left
-      currentDimens.minReal -= increment;
-      currentDimens.maxReal -= increment;
-    },
-  };
-
-  const fn = panTypes[direction];
-  if (fn) {
-    fn();
-    drawMandelbrot(currentDimens);
-  }
-}
 
 window.pan = function (e, direction) {
   e.stopPropagation();
-  handlePan(direction);
+  currentDimens = Utils.handlePan(direction, PAN_INCREMENT, currentDimens);
+  drawMandelbrot(currentDimens, options);
+};
+
+// Update options
+window.updateMandelbrot = function () {
+  const userIterations = document.getElementById('iterations').value;
+  const escapeRadius = document.getElementById('escapeRadius').value;
+  const zoomStep = document.getElementById('zoomStep').value;
+  if (userIterations) {
+    options.iterations = parseInt(userIterations, 10);
+  } else options.iterations = DEF_MAX_ITERATIONS;
+  if (escapeRadius) {
+    options.escapeRadius = parseFloat(escapeRadius);
+  } else options.escapeRadius = DEF_ESCAPE_RADIUS;
+  if (zoomStep) {
+    options.zoomStep = parseFloat(zoomStep);
+  } else options.zoomStep = DEF_ZOOM_STEP;
+  drawMandelbrot(currentDimens, options);
+};
+
+window.handleZoomStep = function () {
+  const zoomStep = document.getElementById('zoomStep').value;
+  if (zoomStep) {
+    options.zoomStep = parseFloat(zoomStep);
+  } else options.zoomStep = DEF_ZOOM_STEP;
 };
 
 window.reset = () => {
   currentDimens = { ...DEFAULT_DIMENS };
   currentColors = DEFAULT_COLORS.slice();
+  options.iterations = DEF_MAX_ITERATIONS;
+  options.escapeRadius = DEF_ESCAPE_RADIUS;
+  options.zoomStep = DEF_ZOOM_STEP;
   const inputs = document.getElementsByClassName('jscolor');
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
     input.jscolor.fromRGB(currentColors[i].r, currentColors[i].g, currentColors[i].b);
   }
-  drawMandelbrot(currentDimens);
+  drawMandelbrot(currentDimens, options);
 };
 
 currentDimens = { ...DEFAULT_DIMENS };
-drawMandelbrot(currentDimens);
+drawMandelbrot(currentDimens, options);
