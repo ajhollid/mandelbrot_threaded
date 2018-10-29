@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
 <head>
+    <title>Mandelbrot Set Visualizer using Worker API</title>
+    <link rel="shortcut icon" href="favicon.ico?" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="normalize.css">
     <link rel="stylesheet" type="text/css" href="skeleton.css">
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -94,7 +96,7 @@
                         <div class="divider"></div>
                         <div class="row">
                             <div class="six columns option-label">
-                                <span >Zoom Step</span>
+                                <span>Zoom Step</span>
                             </div>
                             <div class="six columns dimens-text">
                                 <input type="number" oninput="handleZoomStep()" class="option-input" id="zoomStep"></span>
@@ -108,13 +110,13 @@
         </div>
         <div class="row outer-row">
             <div class="two columns pan-controls control-box block">
-            
+
                 <button onclick="pan(event, 0)" class="pan-button">up</button>
                 <br>
                 <button onclick="pan(event, 3)" class="pan-button">left</button>
                 <button onclick="pan(event, 2)" class="pan-button">down</button>
                 <button onclick="pan(event, 1)" class="pan-button">right</button>
-                <span class ="download-link"><a href="" id="downloadLink" download="mandelbrot-canvas">Download Image</a></span>
+                <span class="download-link"><a href="" id="downloadLink" download="mandelbrot-canvas">Download Image</a></span>
                 <div class="clear-divider"></div>
                 <button onclick="reset()">Reset</button>
             </div>
