@@ -13,6 +13,11 @@ a {
     margin: 1em 0;
     background: #898989;
 }
+
+.clear-divider {
+    height: 1px;
+    margin: 0.25em 0;
+}
 .control-box {
     background-color: #20202098;
     padding: 0.5em
@@ -74,4 +79,9 @@ label {
 .update-button{
     height: 2em;
     line-height: 2em;
+}
+
+.download-link {
+    color: #898989;
+    margin-bottom: 19em;
 }

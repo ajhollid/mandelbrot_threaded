@@ -50,6 +50,10 @@ const X_OFFSET = myCanvas.offsetLeft;
 const Y_OFFSET = myCanvas.offsetTop;
 const context = myCanvas.getContext('2d');
 
+function download() {
+  this.href = myCanvas.toDataURL('image/jpeg');
+}
+
 // Sets the key info in the info box
 function setInfo(dimens, userOptions) {
   const dimenObj = {
@@ -181,6 +185,9 @@ body.addEventListener('contextmenu', (e) => {
   ({ currentDimens, zoomFactor } = zoomResults);
   drawMandelbrot(currentDimens, options);
 });
+
+// Set download link
+document.getElementById('downloadLink').addEventListener('click', download, false);
 
 // Block all clicks on the control/info area
 const elementsToBlock = document.getElementsByClassName('block');
