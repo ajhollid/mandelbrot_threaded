@@ -53,78 +53,79 @@ const app = (function () {
   let colorArray = [];
 
   // public methods
-  const get_max_wokers = () => MAX_WORKERS;
-  const get_def_max_iterations = () => DEF_MAX_ITERATIONS;
-  const get_def_escape_radius = () => DEF_ESCAPE_RADIUS;
-  const get_def_zoom_step = () => DEF_ZOOM_STEP;
+  const getMaxWorkers = () => MAX_WORKERS;
+  const getDefMaxIterations = () => DEF_MAX_ITERATIONS;
+  const getDefEscapeRadius = () => DEF_ESCAPE_RADIUS;
+  const getDefZoomStep = () => DEF_ZOOM_STEP;
 
   // public methods option
-  const get_options = () => options;
-  const set_options_value = (key, value) => {
+  const getOptions = () => options;
+  const setOptionsValue = (key, value) => {
     options[key] = value;
   };
 
   // public methods canvas
-  const get_canvas = () => myCanvas;
-  const get_drawing_context = () => context;
-  const get_canvas_width = () => CANVAS_WIDTH;
-  const get_canvas_height = () => CANVAS_HEIGHT;
-  const get_def_dimens = () => DEFAULT_DIMENS;
-  const get_x_offset = () => X_OFFSET;
-  const get_y_offset = () => Y_OFFSET;
+  const getCanvas = () => myCanvas;
+  const getDrawingContext = () => context;
+  const getCanvasWidth = () => CANVAS_WIDTH;
+  const getCanvasHeight = () => CANVAS_HEIGHT;
+  const getDefDimens = () => DEFAULT_DIMENS;
+  const getXOffset = () => X_OFFSET;
+  const getYOffset = () => Y_OFFSET;
 
   // public methods for zoom
-  const get_pan_increment = () => PAN_INCREMENT;
-  const get_zoom_factor = () => zoomFactor;
-  const set_zoom_factor = (zf) => {
+  const getPanIncrement = () => PAN_INCREMENT;
+  const getZoomFactor = () => zoomFactor;
+  const setZoomFactor = (zf) => {
     zoomFactor = zf;
   };
-  const get_current_dimens = () => currentDimens;
-  const set_current_dimens = (dimens) => {
+  const getCurrentDimens = () => currentDimens;
+  const setCurrentDimens = (dimens) => {
     currentDimens = dimens;
   };
 
-  const get_max_colors = () => MAX_COLORS;
-  const get_def_colors = () => DEFAULT_COLORS;
-  const get_current_colors = () => currentColors;
-  const set_current_colors = (colors) => {
+  // public methods for colors
+  const getMaxColors = () => MAX_COLORS;
+  const getDefColors = () => DEFAULT_COLORS;
+  const getCurrentColors = () => currentColors;
+  const setCurrentColors = (colors) => {
     currentColors = colors;
   };
-  const set_current_color_single_color = (color, i) => {
+  const setSingleColor = (color, i) => {
     currentColors[i] = color;
   };
-  const get_color_array = () => colorArray;
-  const set_color_array = (array) => {
+  const getColorArray = () => colorArray;
+  const setColorArray = (array) => {
     colorArray = array;
   };
 
 
   return {
-    get_max_wokers,
-    get_def_max_iterations,
-    get_def_escape_radius,
-    get_def_zoom_step,
-    get_options,
-    set_options_value,
-    get_canvas,
-    get_drawing_context,
-    get_canvas_width,
-    get_canvas_height,
-    get_def_dimens,
-    get_x_offset,
-    get_y_offset,
-    get_pan_increment,
-    get_zoom_factor,
-    set_zoom_factor,
-    get_current_dimens,
-    set_current_dimens,
-    get_max_colors,
-    get_def_colors,
-    get_current_colors,
-    set_current_colors,
-    set_current_color_single_color,
-    get_color_array,
-    set_color_array,
+    getMaxWorkers,
+    getDefMaxIterations,
+    getDefEscapeRadius,
+    getDefZoomStep,
+    getOptions,
+    setOptionsValue,
+    getCanvas,
+    getDrawingContext,
+    getCanvasWidth,
+    getCanvasHeight,
+    getDefDimens,
+    getXOffset,
+    getYOffset,
+    getPanIncrement,
+    getZoomFactor,
+    setZoomFactor,
+    getCurrentDimens,
+    setCurrentDimens,
+    getMaxColors,
+    getDefColors,
+    getCurrentColors,
+    setCurrentColors,
+    setSingleColor,
+    getColorArray,
+    setColorArray,
   };
 }());
 
@@ -176,11 +177,11 @@ function drawMandelbrot(dimens, userOptions) {
     maxImaginary,
   } = dimens;
   // Generate colors
-  app.set_color_array(createColors(app.get_max_colors(), app.get_current_colors()));
+  app.setColorArray(createColors(app.getMaxColors(), app.getCurrentColors()));
   // Correct for aspect ratio
   const ratio = Math.abs(dimens.maxReal - dimens.minReal)
     / Math.abs(dimens.maxImaginary - dimens.minImaginary);
-  const sratio = app.get_canvas_width() / app.get_canvas_height();
+  const sratio = app.getCanvasWidth() / app.getCanvasHeight();
   if (sratio > ratio) {
     const xf = sratio / ratio;
     minReal *= xf;
@@ -192,29 +193,29 @@ function drawMandelbrot(dimens, userOptions) {
   }
 
   // Calculate factors to convert X and Y to real and imaginary components of a compelx number
-  const realFactor = Utils.calcRealFactor(maxReal, minReal, app.get_canvas_width());
+  const realFactor = Utils.calcRealFactor(maxReal, minReal, app.getCanvasWidth());
   const imaginaryFactor = Utils.calcImaginaryFactor(
     maxImaginary, minImaginary,
-    app.get_canvas_height(),
+    app.getCanvasHeight(),
   );
   const workerFunction = function (e) {
     const { points } = e.data;
     for (let i = 0; i < points.length; i++) {
       const { y, fillStyle } = points[i];
-      app.get_drawing_context().fillStyle = fillStyle;
-      app.get_drawing_context().fillRect(e.data.x, y, 1, 1);
+      app.getDrawingContext().fillStyle = fillStyle;
+      app.getDrawingContext().fillRect(e.data.x, y, 1, 1);
     }
     let currentX = e.data.x;
     // Start work on the column MAX_WORKERS down the axis
-    currentX += app.get_max_wokers();
+    currentX += app.getMaxWorkers();
     // If we haven't reached the end of the canvas
-    if (currentX < app.get_canvas_width()) {
+    if (currentX < app.getCanvasWidth()) {
       // Send a message to the current worker to work on the next x
       this.postMessage({
         options: userOptions,
         x: currentX,
-        CANVAS_HEIGHT: app.get_canvas_height(),
-        colorArray: app.get_color_array(),
+        CANVAS_HEIGHT: app.getCanvasHeight(),
+        colorArray: app.getColorArray(),
         realFactor,
         imaginaryFactor,
         minReal,
@@ -225,13 +226,13 @@ function drawMandelbrot(dimens, userOptions) {
     }
   };
   // Create worker threads and have each thread handle one column of data
-  for (let x = 0; x < app.get_max_wokers(); x++) {
+  for (let x = 0; x < app.getMaxWorkers(); x++) {
     const worker = new Worker();
     worker.postMessage({
       options: userOptions,
       x,
-      CANVAS_HEIGHT: app.get_canvas_height(),
-      colorArray: app.get_color_array(),
+      CANVAS_HEIGHT: app.getCanvasHeight(),
+      colorArray: app.getColorArray(),
       realFactor,
       imaginaryFactor,
       minReal,
@@ -241,7 +242,7 @@ function drawMandelbrot(dimens, userOptions) {
     });
     worker.onmessage = workerFunction;
   }
-  setInfo(app.get_current_dimens(), app.get_options());
+  setInfo(app.getCurrentDimens(), app.getOptions());
 }
 
 
@@ -252,28 +253,28 @@ const body = document.getElementsByTagName('body')[0];
 body.addEventListener('click', (e) => {
   const zoomResults = Utils.handleZoom(
     e,
-    app.get_options().zoomStep,
-    app.get_zoom_factor(),
-    app.get_current_dimens(), app.get_canvas_width(),
-    app.get_canvas_height(), app.get_x_offset(), app.get_y_offset(),
+    app.getOptions().zoomStep,
+    app.getZoomFactor(),
+    app.getCurrentDimens(), app.getCanvasWidth(),
+    app.getCanvasHeight(), app.getXOffset(), app.getYOffset(),
   );
-  app.set_current_dimens(zoomResults.currentDimens);
-  app.set_zoom_factor(zoomResults.zoomFactor);
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  app.setCurrentDimens(zoomResults.currentDimens);
+  app.setZoomFactor(zoomResults.zoomFactor);
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
 });
 
 // Handle zoom out
 body.addEventListener('contextmenu', (e) => {
   const zoomResults = Utils.handleZoom(
     e,
-    1 / app.get_options().zoomStep,
-    app.get_zoom_factor(),
-    app.get_current_dimens(), app.get_canvas_width(),
-    app.get_canvas_height(), app.get_x_offset(), app.get_y_offset(),
+    1 / app.getOptions().zoomStep,
+    app.getZoomFactor(),
+    app.getCurrentDimens(), app.getCanvasWidth(),
+    app.getCanvasHeight(), app.getXOffset(), app.getYOffset(),
   );
-  app.set_current_dimens(zoomResults.currentDimens);
-  app.set_zoom_factor(zoomResults.zoomFactor);
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  app.setCurrentDimens(zoomResults.currentDimens);
+  app.setZoomFactor(zoomResults.zoomFactor);
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
 });
 
 // Set download link
@@ -293,19 +294,19 @@ for (let i = 0; i < elementsToBlock.length; i++) {
 window.updateColor = function (colorData, gradientPosition) {
   // Round values in color array, destructure and assign to r, g, b
   const [r, g, b] = colorData.rgb.map(colorChannel => Math.round(colorChannel));
-  app.set_current_color_single_color({ r, g, b }, gradientPosition);
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  app.setSingleColor({ r, g, b }, gradientPosition);
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
   document.getElementsByClassName('jscolor')[gradientPosition].jscolor.hide();
 };
 
 
 window.pan = function (e, direction) {
   e.stopPropagation();
-  app.set_current_dimens(Utils.handlePan(
+  app.setCurrentDimens(Utils.handlePan(
     direction,
-    app.get_pan_increment(), app.get_current_dimens(),
+    app.getPanIncrement(), app.getCurrentDimens(),
   ));
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
 };
 
 // Update options
@@ -314,40 +315,40 @@ window.updateMandelbrot = function () {
   const escapeRadius = document.getElementById('escapeRadius').value;
   const zoomStep = document.getElementById('zoomStep').value;
   if (userIterations) {
-    app.set_options_value('iterations', parseInt(userIterations, 10) || app.get_def_max_iterations());
+    app.setOptionsValue('iterations', parseInt(userIterations, 10) || app.getDefMaxIterations());
   }
   if (escapeRadius) {
-    app.set_options_value('escapeRadius', parseFloat(escapeRadius) || app.get_def_escape_radius());
+    app.setOptionsValue('escapeRadius', parseFloat(escapeRadius) || app.getDefEscapeRadius());
   }
   if (zoomStep) {
-    app.set_options_value('zoomStep', parseFloat(zoomStep) || app.get_def_zoom_step());
+    app.setOptionsValue('zoomStep', parseFloat(zoomStep) || app.getDefZoomStep());
   }
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
 };
 
 window.handleZoomStep = function () {
   const zoomStep = document.getElementById('zoomStep').value;
   if (zoomStep) {
-    app.set_options_value('zoomStep', parseFloat(zoomStep) || app.get_def_zoom_step());
+    app.setOptionsValue('zoomStep', parseFloat(zoomStep) || app.getDefZoomStep());
   }
 };
 
 window.reset = () => {
-  app.set_current_dimens({ ...app.get_def_dimens() });
-  app.set_current_colors(app.get_def_colors().slice());
-  app.set_options_value('iterations', app.get_def_max_iterations());
-  app.set_options_value('escapeRadius', app.get_def_escape_radius());
-  app.set_options_value('zoomStep', app.get_def_zoom_step());
+  app.setCurrentDimens({ ...app.getDefDimens() });
+  app.setCurrentColors(app.getDefColors().slice());
+  app.setOptionsValue('iterations', app.getDefMaxIterations());
+  app.setOptionsValue('escapeRadius', app.getDefEscapeRadius());
+  app.setOptionsValue('zoomStep', app.getDefZoomStep());
   const inputs = document.getElementsByClassName('jscolor');
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
     input.jscolor.fromRGB(
-      app.get_current_colors()[i].r,
-      app.get_current_colors()[i].g, app.get_current_colors()[i].b,
+      app.getCurrentColors()[i].r,
+      app.getCurrentColors()[i].g, app.getCurrentColors()[i].b,
     );
   }
-  drawMandelbrot(app.get_current_dimens(), app.get_options());
+  drawMandelbrot(app.getCurrentDimens(), app.getOptions());
 };
 
-app.set_current_dimens({ ...app.get_def_dimens() });
-drawMandelbrot(app.get_current_dimens(), app.get_options());
+app.setCurrentDimens({ ...app.getDefDimens() });
+drawMandelbrot(app.getCurrentDimens(), app.getOptions());
