@@ -131,7 +131,7 @@ const app = (function () {
 
 
 function download() {
-  this.href = app.get.toDataURL('image/jpeg');
+  this.href = app.getCanvas().toDataURL('image/jpeg');
 }
 
 // Sets the key info in the info box
